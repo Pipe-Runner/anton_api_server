@@ -2,38 +2,23 @@
 
 var db = require('../dbconnection');
 
-var ADMIN_TOKEN = '123abc';
-
 var Customers = {
   find: function(username, passwordHash, contactNumber, isAdmin, callback) {
-    if (isAdmin === true) {
-      return db.query(
-        'SELECT * FROM customers WHERE username=? AND passwordHash=? AND contactNumber=? AND isAdmin=?',
-        [username, passwordHash, contactNumber, true],
-        callback
-      );
-    } else {
-      return db.query(
-        'SELECT * FROM customers WHERE username=? AND passwordHash=? AND contactNumber=? AND isAdmin=?',
-        [name, passwordHash, contactNumber, false],
-        callback
-      );
-    }
+    return db.query(
+      'SELECT * FROM customers WHERE username=? AND passwordHash=? AND contactNumber=? AND isAdmin=?',
+      [username, passwordHash, contactNumber, isAdmin],
+      callback
+    );
   },
-  add: function(username, passwordHash, contactNumber, adminToken, callback) {
-    if (adminToken === ADMIN_TOKEN) {
-      return db.query(
-        'INSERT INTO customers VALUE( ?, ?, ?, ? )',
-        [username, passwordHash, contactNumber, true],
-        callback
-      );
-    } else {
-      return db.query(
-        'INSERT INTO customers VALUE( ?, ?, ?, ? )',
-        [username, passwordHash, contactNumber, false],
-        callback
-      );
-    }
+  findByUserName: function(username, callback) {
+    return db.query('SELECT * FROM customers WHERE username=?', [username], callback);
+  },
+  add: function(username, passwordHash, contactNumber, isAdmin, callback) {
+    return db.query(
+      'INSERT INTO customers( username, passwordHash, contactNumber, isAdmin) VALUE( ?, ?, ?, ? )',
+      [username, passwordHash, contactNumber, isAdmin],
+      callback
+    );
   },
 };
 
