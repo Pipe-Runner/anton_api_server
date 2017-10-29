@@ -4,8 +4,8 @@ var express = require('express');
 var router = express.Router();
 var history = require('../models/history');
 
-router.get('/fetchhistory', function(req, res, next) {
-  history.getAll(function(err, rows) {
+router.get('/fetchall', function(req, res, next) {
+  history.fetchAll(function(err, rows) {
     if (err) {
       console.log(err);
       res.json({ code: '404', error: 'problem in query' });

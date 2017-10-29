@@ -3,8 +3,41 @@
 var db = require('../dbconnection');
 
 var Transaction = {
-  getAll: function(callback) {
-    return db.query('select * from transactions;', callback);
+  fetchSoldCount: function(callback) {
+    return db.query('SELECT COUNT(*) FROM transaction;', callback);
+  },
+  fetchAll: function(callback) {
+    return db.query('SELECT * from transaction;', callback);
+  },
+  findByCredentials: function(
+    paymentMethod,
+    cardOwnerName,
+    contactNumberOnCard,
+    date,
+    time,
+    callback
+  ) {
+    return db.query(
+      'SELECT * from transaction WHERE paymentMethod=? AND cardOwnerName=? AND contactNumberOnCard=? AND date=? AND time=? ',
+      [paymentMethod, cardOwnerName, contactNumberOnCard, date, time],
+      callback
+    );
+  },
+  add: function(
+    paymentMethod,
+    transactionType,
+    contactNumberOnCard,
+    amount,
+    date,
+    time,
+    cardOwnerName,
+    callback
+  ) {
+    return db.query(
+      'INSERT into transaction( paymentMethod, amount, transactionType, cardOwnerName, date, time, contactNumberOnCard ) values( ?, ?, ?, ?, ?, ?, ? )',
+      [paymentMethod, amount, transactionType, cardOwnerName, date, time, contactNumberOnCard],
+      callback
+    );
   },
 };
 

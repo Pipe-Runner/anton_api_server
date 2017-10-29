@@ -4,10 +4,9 @@ var express = require('express');
 var router = express.Router();
 var transaction = require('../models/transaction');
 
-router.get('/fetchtransaction', function(req, res, next) {
-  transaction.getAll(function(err, rows) {
+router.get('/fetchall', function(req, res, next) {
+  transaction.fetchAll(function(err, rows) {
     if (err) {
-      console.log(err);
       res.json({ code: '404', error: 'problem in query' });
     } else {
       res.json({
@@ -19,7 +18,7 @@ router.get('/fetchtransaction', function(req, res, next) {
   });
 });
 
-router.post('/searchtransaction', function(req, res, next) {
+router.post('/searchtransactions', function(req, res, next) {
   console.log(req.body);
   res.json({ code: '200', error: 'none' });
 });

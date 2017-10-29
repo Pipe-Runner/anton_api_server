@@ -3,12 +3,17 @@
 var db = require('../dbconnection');
 
 var Inventory = {
-  getAll: function(callback) {
+  fetchSoldCount: function(callback) {
+    return db.query('SELECT COUNT(*) FROM part WHERE historyId IS NOT NULL;', callback);
+  },
+  fetchAll: function(callback) {
     return db.query(
-      'SELECT a.id, a.partType, a.modelNumber, a.price, b.name as supplierName, a.storedAt, a.vehicleName, a.fuelType FROM parts as a, suppliers as b WHERE a.supplierId=b.id',
+      'SELECT p.id, p.partType, p.modelNumber, p.cost, s.fullName as supplierName, v.name as vehicle, v.fuelType, p.storedAt FROM part as p, supplier as s, vehicle as v WHERE p.vehicleId=v.id AND p.supplierId=s.id AND p.historyId=NULL',
       callback
     );
   },
+  getByQuery: function() {},
+  add: function() {},
 };
 
 module.exports = Inventory;

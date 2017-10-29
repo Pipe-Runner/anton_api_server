@@ -1,0 +1,1 @@
+const SUPER_USER_PASSWORD = '123abc';
