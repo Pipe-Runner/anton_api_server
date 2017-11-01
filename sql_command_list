@@ -1,0 +1,20 @@
+CREATE TABLE user( id INT AUTO_INCREMENT, fullName VARCHAR(30) NOT NULL,emailId VARCHAR(30) NOT NULL UNIQUE, passwordHash VARCHAR(30) NOT NULL,contactNumber VARCHAR(10) NOT NULL UNIQUE, userLevel INT NOT NULL Default 0, PRIMARY KEY (id) );
+
+CREATE TABLE employee( id INT AUTO_INCREMENT, userId INT, fullName VARCHAR(30) NOT NULL ,contactNumber VARCHAR(10) NOT NULL, address VARCHAR(30) NOT NULL, isWorking boolean NOT NULL DEFAULT true, PRIMARY KEY (id) );
+
+CREATE TABLE supplier( id INT AUTO_INCREMENT, fullName VARCHAR(30) NOT NULL ,contactNumber VARCHAR(10) NOT NULL, address VARCHAR(50) NOT NULL, PRIMARY KEY (id) );
+
+CREATE TABLE vehicle( id INT AUTO_INCREMENT, name VARCHAR(30) NOT NULL, fuelType VARCHAR(30) NOT NULL, PRIMARY KEY(id) );
+
+CREATE TABLE transaction( id INT AUTO_INCREMENT, paymentMethod VARCHAR(40) NOT NULL DEFAULT "CASH", amount INT NOT NULL, transactionType VARCHAR(20), contactNumberOnCard VARCHAR(10),cardOwnerName VARCHAR(30), date DATE, time TIME, PRIMARY KEY (id) );
+
+// transaction type: "SERVICE","SALE","SALARY"
+// transaction method: "CASH", "CARD/[BANK_NAME]"
+
+CREATE TABLE history( id INT AUTO_INCREMENT, employeeId INT NOT NULL, userId INT NOT NULL, transactionId INT NOT NULL, PRIMARY KEY (id), FOREIGN KEY(employeeID) REFERENCES employee(id), FOREIGN KEY(userId) REFERENCES user(id), FOREIGN KEY(transactionId) REFERENCES transaction(id));
+
+CREATE TABLE part( id INT AUTO_INCREMENT, partType VARCHAR(30) NOT NULL, modelNumber VARCHAR(30) NOT NULL, cost INT NOT NULL, supplierId INT, storedAt VARCHAR(30) NOT NULL DEFAULT "GODOWN", vehicleId INT NOT NULL, historyId INT, PRIMARY KEY (id), FOREIGN KEY (supplierId) REFERENCES supplier(id), FOREIGN KEY (vehicleId) REFERENCES vehicle(id), FOREIGN KEY (historyId) REFERENCES history(id));
+
+CREATE TABLE booking( id INT AUTO_INCREMENT, userId INT, vehicleId INT, date DATE, startTime TIME, endTime TIME, transactionId INT, isDone BOOLEAN DEFAULT false, numberPlate VARCHAR(10) NOT NULL, PRIMARY KEY(id), FOREIGN KEY(userId) REFERENCES user(id), FOREIGN KEY (vehicleId) REFERENCES vehicle(id), FOREIGN KEY(transactionId) REFERENCES transaction(id ));
+
+CREATE TABLE salary( id INT AUTO_INCREMENT, employeeId INT NOT NULL, transactionId INT NOT NULL, PRIMARY KEY(id), FOREIGN KEY(employeeId) REFERENCES employee(id), FOREIGN KEY(transactionId) REFERENCES transaction(id));
