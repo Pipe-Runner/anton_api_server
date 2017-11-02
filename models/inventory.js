@@ -12,6 +12,9 @@ var Inventory = {
       callback
     );
   },
+  sell: function(id, historyId, callback) {
+    return db.query('UPDATE part SET historyId=? WHERE id=?', [historyId, id], callback);
+  },
   getByQuery: function() {},
   add: function() {},
 };

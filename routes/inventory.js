@@ -1,10 +1,13 @@
 // Routes for inventory related endpoints
 
-var express = require('express');
-var router = express.Router();
-var inventory = require('../models/inventory');
-var booking = require('../models/booking');
-var transaction = require('../models/transaction');
+const eachOf = require('async/eachOf');
+const express = require('express');
+const router = express.Router();
+const inventory = require('../models/inventory');
+const booking = require('../models/booking');
+const transaction = require('../models/transaction');
+const history = require('../models/history');
+const user = require('../models/user');
 
 router.get('/fetchsoldcount', function(req, res, next) {
   const partCount = 0;
@@ -59,31 +62,104 @@ router.get('/fetchall', function(req, res, next) {
   });
 });
 
-// router.post('/addpartstobill', function(req, res, next) {
-//   var username = req.body.username;
-//   var passwordHash = req.body.password;
-//   var contactNumber = req.body.contactNumber;
-//   var isAdmin = req.body.isAdmin;
+router.post('/addpartstobill', function(req, res, next) {
+  const employeeId = req.body.employeeId;
+  const emailId = req.body.customerEmailId;
+  const contactNumber = req.body.customerContactNumber;
+  const cart = req.body.cart;
+  const amount = req.body.amount;
 
-//   customer.find(username, passwordHash, contactNumber, isAdmin, function(err, rows) {
-//     if (err) {
-//       console.log(err);
-//       res.json({ code: '404', error: 'problem in query' });
-//     } else {
-//       if (rows.length !== 0) {
-//         console.log(rows);
-//         res.json({
-//           code: '200',
-//           error: 'none',
-//           username: rows[0].username,
-//           isAdmin: rows[0].isAdmin,
-//         });
-//       } else {
-//         res.json({ code: '404', error: 'User not signed up' });
-//       }
-//     }
-//   });
-// });
+  const currentDateTime = new Date();
+  const transactionTime = currentDateTime.toLocaleTimeString();
+  const transactionDate = currentDateTime.toLocaleDateString();
+
+  // find the userId using credentials
+  user.findByCredentials(emailId, contactNumber, function(err, rows) {
+    if (err) {
+      res.json({ code: '404', error: 'Problem in Query' });
+    } else {
+      // if successful add transaction
+      if (rows.length !== 1) {
+        res.json({ code: '404', error: 'Could Not Find Customer' });
+      } else {
+        const userId = rows[0].id;
+        transaction.add(
+          'CASH',
+          'SALE',
+          contactNumber,
+          amount,
+          transactionDate,
+          transactionTime,
+          null,
+          function(err, rows) {
+            if (err) {
+              res.json({ code: '404', error: 'Error in adding transaction' });
+            } else {
+              // if successful, find the id given to that transaction
+              transaction.findByCredentials(
+                'CASH',
+                null,
+                contactNumber,
+                transactionDate,
+                transactionTime,
+                function(err, rows) {
+                  if (rows.length !== 1 && false) {
+                    res.json({ code: '404', error: 'Error in finding transaction' });
+                  } else {
+                    // if successful, add the above data to history along with employee ID
+                    const transactionId = rows[0].id;
+                    history.add(userId, employeeId, transactionId, function(err, rows) {
+                      if (err) {
+                        res.json({ code: '404', error: 'Could Not Add To History' });
+                      } else {
+                        // Find the ID given to the history
+                        history.findByTransactionId(transactionId, function(err, rows) {
+                          if (err) {
+                            res.json({ code: '404', error: 'Could Not Find History' });
+                          } else {
+                            // if successful, use the history id to update the cart entries
+                            const historyId = rows[0].id;
+                            console.log('historyId: ' + historyId);
+                            eachOf(
+                              cart,
+                              function(item, index, callback) {
+                                inventory.sell(item.id, historyId, callback);
+                              },
+                              function(err) {
+                                console.log('reached final callback');
+                                if (err) {
+                                  res.json({ code: '404', error: 'Problem In Query' });
+                                } else {
+                                  // final callback to send in the new list of items
+                                  inventory.fetchAll(function(err, rows) {
+                                    if (err) {
+                                      console.log(err);
+                                      res.json({ code: '404', error: 'problem in query' });
+                                    } else {
+                                      res.json({
+                                        code: '200',
+                                        error: 'none',
+                                        parts: rows,
+                                      });
+                                    }
+                                  });
+                                }
+                              }
+                            );
+                          }
+                        });
+                      }
+                    });
+                  }
+                }
+              );
+            }
+          }
+        );
+      }
+    }
+  });
+});
 
 // router.post('/searchparts', function(req, res, next) {
 //   console.log(req.body);

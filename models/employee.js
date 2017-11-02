@@ -25,10 +25,13 @@ var Employee = {
   },
   addByUserId: function(userId, fullname, contactNumber, address, callback) {
     return db.query(
-      'INSERT INTO user( fullname,contactNumber, userId, address, isWorking) VALUE( ?, ?, ?, ?, ? )',
+      'INSERT INTO employee( fullname,contactNumber, userId, address, isWorking) VALUE( ?, ?, ?, ?, ? )',
       [fullname, contactNumber, userId, address, true],
       callback
     );
+  },
+  changeStatus: function(id, isWorking, callback) {
+    return db.query('update employee set isWorking=? where id=?;', [isWorking, id], callback);
   },
 };
 

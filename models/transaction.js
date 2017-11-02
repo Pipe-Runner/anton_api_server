@@ -17,6 +17,13 @@ var Transaction = {
     time,
     callback
   ) {
+    if (cardOwnerName === null) {
+      return db.query(
+        'SELECT * from transaction WHERE paymentMethod=? AND cardOwnerName is NULL AND contactNumberOnCard=? AND date=? AND time=? ',
+        [paymentMethod, contactNumberOnCard, date, time],
+        callback
+      );
+    }
     return db.query(
       'SELECT * from transaction WHERE paymentMethod=? AND cardOwnerName=? AND contactNumberOnCard=? AND date=? AND time=? ',
       [paymentMethod, cardOwnerName, contactNumberOnCard, date, time],

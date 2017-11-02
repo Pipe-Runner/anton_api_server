@@ -17,6 +17,9 @@ var History = {
       callback
     );
   },
+  findByTransactionId: function(transactionId, callback) {
+    return db.query('SELECT id FROM history WHERE transactionId=?;', [transactionId], callback);
+  },
 };
 
 module.exports = History;

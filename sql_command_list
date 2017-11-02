@@ -1,6 +1,6 @@
 CREATE TABLE user( id INT AUTO_INCREMENT, fullName VARCHAR(30) NOT NULL,emailId VARCHAR(30) NOT NULL UNIQUE, passwordHash VARCHAR(30) NOT NULL,contactNumber VARCHAR(10) NOT NULL UNIQUE, userLevel INT NOT NULL Default 0, PRIMARY KEY (id) );
 
-CREATE TABLE employee( id INT AUTO_INCREMENT, userId INT, fullName VARCHAR(30) NOT NULL ,contactNumber VARCHAR(10) NOT NULL, address VARCHAR(30) NOT NULL, isWorking boolean NOT NULL DEFAULT true, PRIMARY KEY (id) );
+CREATE TABLE employee( id INT AUTO_INCREMENT, userId INT, fullName VARCHAR(30) NOT NULL ,contactNumber VARCHAR(10) NOT NULL, address VARCHAR(30), isWorking boolean NOT NULL DEFAULT true, PRIMARY KEY (id), FOREIGN KEY (userId) REFERENCES user(id) );
 
 CREATE TABLE supplier( id INT AUTO_INCREMENT, fullName VARCHAR(30) NOT NULL ,contactNumber VARCHAR(10) NOT NULL, address VARCHAR(50) NOT NULL, PRIMARY KEY (id) );
 
