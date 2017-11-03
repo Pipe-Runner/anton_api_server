@@ -11,6 +11,8 @@ var inventory = require('./routes/inventory');
 var history = require('./routes/history');
 var transaction = require('./routes/transaction');
 var booking = require('./routes/booking');
+var vehicle = require('./routes/vehicle');
+var supplier = require('./routes/supplier');
 
 var app = express();
 
@@ -32,6 +34,8 @@ app.use('/inventory', inventory);
 app.use('/history', history);
 app.use('/transaction', transaction);
 app.use('/booking', booking);
+app.use('/vehicle', vehicle);
+app.use('/supplier', supplier);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

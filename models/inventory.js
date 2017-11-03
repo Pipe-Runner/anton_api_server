@@ -16,7 +16,13 @@ var Inventory = {
     return db.query('UPDATE part SET historyId=? WHERE id=?', [historyId, id], callback);
   },
   getByQuery: function() {},
-  add: function() {},
+  add: function(partType, modelNumber, cost, supplierId, storedAt, vehicleId, callback) {
+    return db.query(
+      'INSERT INTO part( partType, modelNumber, cost, supplierId, storedAt, vehicleId ) values( ?, ?, ?, ?, ?, ? )',
+      [partType, modelNumber, cost, supplierId, storedAt, vehicleId],
+      callback
+    );
+  },
 };
 
 module.exports = Inventory;

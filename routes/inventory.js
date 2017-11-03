@@ -161,9 +161,27 @@ router.post('/addpartstobill', function(req, res, next) {
   });
 });
 
-// router.post('/searchparts', function(req, res, next) {
-//   console.log(req.body);
-//   res.json({ code: '200', error: 'none' });
-// });
+router.post('/add', function(req, res, next) {
+  const partType = req.body.partType;
+  const modelNumber = req.body.modelNumber;
+  const cost = req.body.cost;
+  const vehicleId = req.body.vehicleId;
+  const supplierId = req.body.supplierId;
+  const storedAt = req.body.storedAt;
+
+  console.log(req.body);
+
+  inventory.add(partType, modelNumber, cost, supplierId, storedAt, vehicleId, function(err, rows) {
+    if (err) {
+      console.log(err);
+      res.json({ code: '404', error: 'Problem in Query' });
+    } else {
+      res.json({
+        code: '200',
+        error: 'none',
+      });
+    }
+  });
+});
 
 module.exports = router;
