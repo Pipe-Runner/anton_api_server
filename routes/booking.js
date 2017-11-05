@@ -91,6 +91,7 @@ router.post('/submitbookingdata', function(req, res, next) {
               const transactionId = rows[0].id;
               booking.add(userId, numberPlate, date, startTime, transactionId, function(err, rows) {
                 if (err) {
+                  console.log(err);
                   res.json({ code: '404', error: 'Problem in Query' });
                 } else {
                   res.json({ code: '200', error: 'none' });
