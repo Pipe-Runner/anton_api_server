@@ -112,7 +112,7 @@ router.post('/makeemployee', function(req, res, next) {
   const contactNumber = req.body.contactNumber;
   const userLevel = req.body.userLevel;
 
-  if (userLevel === z0) {
+  if (userLevel === 0) {
     user.changeStatus(userId, undefined, function(err, rows) {
       if (err) {
         console.log(err);
