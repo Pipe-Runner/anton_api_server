@@ -83,6 +83,8 @@ router.post('/addpartstobill', function(req, res, next) {
         res.json({ code: '404', error: 'Could Not Find Customer' });
       } else {
         const userId = rows[0].id;
+        const userName = rows[0].fullName;
+
         transaction.add(
           'CASH',
           'SALE',
@@ -90,7 +92,7 @@ router.post('/addpartstobill', function(req, res, next) {
           amount,
           transactionDate,
           transactionTime,
-          null,
+          userName,
           function(err, rows) {
             if (err) {
               res.json({ code: '404', error: 'Error in adding transaction' });
@@ -98,7 +100,7 @@ router.post('/addpartstobill', function(req, res, next) {
               // if successful, find the id given to that transaction
               transaction.findByCredentials(
                 'CASH',
-                null,
+                userName,
                 contactNumber,
                 transactionDate,
                 transactionTime,

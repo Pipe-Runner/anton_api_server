@@ -110,29 +110,53 @@ router.post('/makeemployee', function(req, res, next) {
   const userId = req.body.userId;
   const fullName = req.body.fullName;
   const contactNumber = req.body.contactNumber;
+  const userLevel = req.body.userLevel;
 
-  console.log(req.body);
-  user.changeStatus(userId, undefined, function(err, rows) {
-    if (err) {
-      console.log(err);
-    } else {
-      employee.addByUserId(userId, fullName, contactNumber, null, function(err, rows) {
-        if (err) {
-          console.log(err);
-          res.json({ code: '404', error: 'Problem in query' });
-        } else {
-          user.fetchAll(function(err, rows) {
-            if (err) {
-              console.log(err);
-              res.json({ code: '404', error: 'Problem in query' });
-            } else {
-              res.json({ code: '200', error: 'none', userList: rows });
-            }
-          });
-        }
-      });
-    }
-  });
+  if (userLevel === z0) {
+    user.changeStatus(userId, undefined, function(err, rows) {
+      if (err) {
+        console.log(err);
+      } else {
+        employee.addByUserId(userId, fullName, contactNumber, null, function(err, rows) {
+          if (err) {
+            console.log(err);
+            res.json({ code: '404', error: 'Problem in query' });
+          } else {
+            user.fetchAll(function(err, rows) {
+              if (err) {
+                console.log(err);
+                res.json({ code: '404', error: 'Problem in query' });
+              } else {
+                res.json({ code: '200', error: 'none', userList: rows });
+              }
+            });
+          }
+        });
+      }
+    });
+  } else {
+    user.changeStatus(userId, userLevel, function(err, rows) {
+      if (err) {
+        console.log(err);
+      } else {
+        employee.addByUserId(userId, fullName, contactNumber, null, function(err, rows) {
+          if (err) {
+            console.log(err);
+            res.json({ code: '404', error: 'Problem in query' });
+          } else {
+            user.fetchAll(function(err, rows) {
+              if (err) {
+                console.log(err);
+                res.json({ code: '404', error: 'Problem in query' });
+              } else {
+                res.json({ code: '200', error: 'none', userList: rows });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
 });
 
 router.post('/changeuserstatus', function(req, res, next) {
