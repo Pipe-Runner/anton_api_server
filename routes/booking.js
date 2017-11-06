@@ -11,6 +11,7 @@ router.post('/fetchbycredentials', function(req, res, next) {
   const userId = req.body.userId;
 
   booking.getByCredentials(userId, function(err, rows) {
+    console.log(rows);
     if (err) {
       console.log(err);
       res.json({ code: '404', error: 'problem in query' });
@@ -36,7 +37,8 @@ router.post('/verifydata1', function(req, res, next) {
       console.log(err);
       res.json({ code: '404', error: 'problem in query' });
     } else {
-      if (rows.length <= 2) {
+      console.log;
+      if (rows.length < 2) {
         res.json({ code: '200', error: 'none', isAvailable: true });
       } else {
         res.json({ code: '200', error: 'none', isAvailable: false });
@@ -63,46 +65,60 @@ router.post('/submitbookingdata', function(req, res, next) {
   const transactionTime = currentDateTime.toLocaleTimeString();
   const transactionDate = currentDateTime.toLocaleDateString();
 
-  transaction.add(
-    'CARD/' + bankName,
-    'SERVICE',
-    contactNumber,
-    1500,
-    transactionDate,
-    transactionTime,
-    cardOwner,
-    function(err, rows) {
-      if (err) {
-        res.json({ code: '404', error: 'Error in adding transaction' });
-      } else {
-        transaction.findByCredentials(
+  booking.checkTimeSlot(date, time, function(err, rows) {
+    if (err) {
+      console.log(err);
+      res.json({ code: '404', error: 'problem in query' });
+    } else {
+      if (rows.length < 2) {
+        transaction.add(
           'CARD/' + bankName,
-          cardOwner,
+          'SERVICE',
           contactNumber,
+          1500,
           transactionDate,
           transactionTime,
+          cardOwner,
           function(err, rows) {
-            console.log(err);
-            if (rows.length !== 1 && false) {
-              console.log(rows.length);
-              res.json({ code: '404', error: 'Error in finding transaction' });
+            if (err) {
+              res.json({ code: '404', error: 'Error in adding transaction' });
             } else {
-              const startTime = time;
-              const transactionId = rows[0].id;
-              booking.add(userId, numberPlate, date, startTime, transactionId, function(err, rows) {
-                if (err) {
+              transaction.findByCredentials(
+                'CARD/' + bankName,
+                cardOwner,
+                contactNumber,
+                transactionDate,
+                transactionTime,
+                function(err, rows) {
                   console.log(err);
-                  res.json({ code: '404', error: 'Problem in Query' });
-                } else {
-                  res.json({ code: '200', error: 'none' });
+                  if (rows.length !== 1 && false) {
+                    console.log(rows.length);
+                    res.json({ code: '404', error: 'Error in finding transaction' });
+                  } else {
+                    const startTime = time;
+                    const transactionId = rows[0].id;
+                    booking.add(userId, numberPlate, date, startTime, transactionId, function(
+                      err,
+                      rows
+                    ) {
+                      if (err) {
+                        console.log(err);
+                        res.json({ code: '404', error: 'Problem in Query' });
+                      } else {
+                        res.json({ code: '200', error: 'none' });
+                      }
+                    });
+                  }
                 }
-              });
+              );
             }
           }
         );
+      } else {
+        res.json({ code: '404', error: 'The slot was just taken away! Sorry' });
       }
     }
-  );
+  });
 });
 
 router.get('/fetchpendingbooking', function(req, res, next) {

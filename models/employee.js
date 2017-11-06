@@ -8,7 +8,7 @@ var Employee = {
   },
   findByUserId: function(userId, callback) {
     return db.query(
-      'SELECT e.id FROM employee as e, user as u WHERE e.userId=?',
+      'SELECT e.id FROM employee as e, user as u WHERE e.userId=? AND e.isWorking=true',
       [userId],
       callback
     );
