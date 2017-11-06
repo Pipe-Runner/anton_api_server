@@ -26,7 +26,7 @@ var Booking = {
 
   checkTimeSlot: function(date, startTime, callback) {
     return db.query(
-      'SELECT * from booking WHERE ( date=? AND ( startTime>=? AND startTime<=ADDTIME(?,"02:00:00")) OR ( ?<endTime AND ADDTIME(?,"02:00:00")>=endTime) );',
+      'SELECT * from booking WHERE ( date=?) AND (( startTime>=? AND startTime<=ADDTIME(?,"02:00:00")) OR ( ?<endTime AND ADDTIME(?,"02:00:00")>=endTime) );',
       [date, startTime, startTime, startTime, startTime],
       callback
     );
