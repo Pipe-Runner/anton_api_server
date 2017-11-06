@@ -11,11 +11,19 @@ var User = {
     );
   },
   find: function(emailId, passwordHash, contactNumber, callback) {
-    return db.query(
-      'SELECT * FROM user WHERE emailId=? AND passwordHash=? AND contactNumber=?',
-      [emailId, passwordHash, contactNumber],
-      callback
-    );
+    if (passwordHash === undefined) {
+      return db.query(
+        'SELECT * FROM user WHERE emailId=? AND contactNumber=?',
+        [emailId, contactNumber],
+        callback
+      );
+    } else {
+      return db.query(
+        'SELECT * FROM user WHERE emailId=? AND passwordHash=? AND contactNumber=?',
+        [emailId, passwordHash, contactNumber],
+        callback
+      );
+    }
   },
   findByCredentials: function(emailId, contactNumber, callback) {
     if (contactNumber === undefined) {
